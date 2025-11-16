@@ -2,8 +2,8 @@
 models/
 artifacts/
 data/
-train_set.csv
-test_set.csv
+full_train_set.csv
+full_test_set.csv
 
 # Python junk
 __pycache__/
