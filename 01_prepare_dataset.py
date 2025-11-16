@@ -50,6 +50,18 @@ def main(args):
         merged["label_id"] = merged["chain_id"].astype(str)
         merged["label_name"] = merged["chain_name"].fillna("UnknownChain")
 
+    # --- Diagnostic: check class distribution BEFORE filtering ---
+    counts = merged["label_id"].value_counts()
+    print("\nClass distribution BEFORE filtering:")
+    print(counts.describe())
+
+    print("\nClasses with >= 5 images:", (counts >= 5).sum())
+    print("Classes with >= 3 images:", (counts >= 3).sum())
+    print("Classes with >= 2 images:", (counts >= 2).sum())
+    print("Classes with >= 1 image:", (counts >= 1).sum())
+    print("-----------------------------------------------------\n")
+    # ---------------------------------------------------------------
+
     # Optional: filter only classes with >= min_images
     gb = merged.groupby("label_id")
     keep_ids = gb.size()[gb.size() >= args.min_images_per_class].index
@@ -131,7 +143,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--chain-csv", default="chain_info.csv")
     ap.add_argument("--hotel-csv", default="hotel_info.csv")
-    ap.add_argument("--test-csv",  default="train_set.csv")
+    ap.add_argument("--test-csv",  default="50k_train_set.csv") #change to full_train_set.csv for the full 1 million files
     ap.add_argument("--label-field", choices=["hotel","chain"], default="hotel",
                     help="")
     ap.add_argument("--min-images-per-class", type=int, default=5,
