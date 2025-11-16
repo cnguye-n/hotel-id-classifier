@@ -11,7 +11,8 @@ from scipy.stats import skew
 # Path is relative to THIS file. Adjust if your CSV is elsewhere.
 DATA_PATH = Path("../full_train_set.csv")   # or "../50k_train_set.csv"
 LABEL_COL = "hotel_id"                      # what column defines a "class"
-FIG_PATH  = Path("images_per_hotel.png")    # where to save the plot
+BARCHAT_PATH  = Path("images_per_hotel.png")    # where to save the plot
+BOXPLOT_PATH = Path("images_per_hotel_boxplot.png")  # where to save boxplot figure
 # -------------------------------------------------------------------
 
 
@@ -110,14 +111,111 @@ def plot_image_count_distribution(
 
     plt.show()
 
+def plot_boxplot_image_counts(
+    counts: pd.Series,
+    output_path: Path | None = None,
+):
+    """
+    Plot a boxplot of images-per-hotel with labels for:
+    - Q1, median, Q3
+    - IQR
+    - Lower/upper whiskers (1.5 * IQR rule)
+    - Number of outliers
+    """
+    data = counts.values
 
+    q1 = counts.quantile(0.25)
+    median = counts.quantile(0.50)
+    q3 = counts.quantile(0.75)
+    iqr = q3 - q1
+
+    # Whiskers using the 1.5 * IQR rule
+    lower_bound = q1 - 1.5 * iqr
+    upper_bound = q3 + 1.5 * iqr
+
+    lower_whisker = counts[counts >= lower_bound].min()
+    upper_whisker = counts[counts <= upper_bound].max()
+
+    outliers = counts[(counts < lower_whisker) | (counts > upper_whisker)]
+
+    plt.figure(figsize=(10, 4))
+    ax = plt.gca()
+
+    # vert=False → horizontal boxplot
+    bp = ax.boxplot(
+        data,
+        vert=False,
+        showfliers=True,
+        patch_artist=True,
+        boxprops=dict(facecolor="#cce5ff", alpha=0.8),
+        medianprops=dict(color="red", linewidth=2),
+    )
+
+    ax.set_title("Boxplot of Images per Hotel")
+    ax.set_xlabel("Number of Images per Hotel")
+    ax.set_yticks([])  # only one box, so y-axis label isn't helpful
+
+    # Vertical lines to mark key stats
+    ax.axvline(q1, color="orange", linestyle="--", linewidth=1)
+    ax.axvline(median, color="red", linestyle="--", linewidth=1)
+    ax.axvline(q3, color="orange", linestyle="--", linewidth=1)
+    ax.axvline(lower_whisker, color="green", linestyle="--", linewidth=1)
+    ax.axvline(upper_whisker, color="green", linestyle="--", linewidth=1)
+
+    # Text annotations
+    y = 1.02  # just above the box
+
+    ax.text(q1, y + 0.05, f"Q1 = {q1:.1f}", color="orange", ha="center")
+    ax.text(median, y + 0.10, f"Median = {median:.1f}", color="red", ha="center")
+    ax.text(q3, y + 0.05, f"Q3 = {q3:.1f}", color="orange", ha="center")
+
+    ax.text(
+        (q1 + q3) / 2,
+        y - 0.15,
+        f"IQR = {iqr:.1f}",
+        color="purple",
+        ha="center",
+        bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="purple", alpha=0.6),
+    )
+
+    ax.text(
+        lower_whisker,
+        y - 0.25,
+        f"Lower whisker = {lower_whisker:.1f}",
+        color="green",
+        ha="center",
+    )
+    ax.text(
+        upper_whisker,
+        y - 0.25,
+        f"Upper whisker = {upper_whisker:.1f}",
+        color="green",
+        ha="center",
+    )
+
+    ax.text(
+        upper_whisker,
+        y + 0.20,
+        f"Outliers = {len(outliers)}",
+        color="black",
+        ha="left",
+    )
+
+    plt.tight_layout()
+
+    if output_path is not None:
+        plt.savefig(output_path, dpi=300)
+        print(f"Saved boxplot figure to {output_path}")
+
+    plt.show()
 
 def main():
     """Orchestrate the full skewness + class distribution analysis."""
     df = load_dataset(DATA_PATH)
     counts = compute_image_counts(df, LABEL_COL)
     _ = compute_skewness(counts)
-    plot_image_count_distribution(counts, output_path=FIG_PATH)
+    #plot_image_count_distribution(counts, output_path=BARCHAT_PATH) #uncomment if you haven't created bar chart image already
+    plot_boxplot_image_counts(counts, output_path=BOXPLOT_PATH) #uncomment if you haven't created boxplot image already
 
 
 # Only run main() when this file is executed directly (not imported)
