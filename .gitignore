@@ -1,0 +1,10 @@
+# Big data / models - do NOT push to GitHub
+models/
+artifacts/
+data/
+train_set.csv
+test_set.csv
+
+# Python junk
+__pycache__/
+*.pyc
