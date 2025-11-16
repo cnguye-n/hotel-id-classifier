@@ -1,0 +1,70 @@
+{
+  "12271": {
+    "label_idx": 0,
+    "label_name": "Fairfield Inn Marriott Provo"
+  },
+  "204391": {
+    "label_idx": 1,
+    "label_name": "Hampton Inn Boston - Westborough"
+  },
+  "23763": {
+    "label_idx": 2,
+    "label_name": "Courtyard Montgomery Prattville"
+  },
+  "26228": {
+    "label_idx": 3,
+    "label_name": "Quality Inn Peoria"
+  },
+  "27039": {
+    "label_idx": 4,
+    "label_name": "Courtyard by Marriott Indianapolis at the Capitol"
+  },
+  "30811": {
+    "label_idx": 5,
+    "label_name": "Red Roof Inn Durham - Duke University Medical Center"
+  },
+  "37145": {
+    "label_idx": 6,
+    "label_name": "Chattanooga Marriott Downtown"
+  },
+  "51359": {
+    "label_idx": 7,
+    "label_name": "theWit Chicago - a DoubleTree by Hilton Hotel"
+  },
+  "5857": {
+    "label_idx": 8,
+    "label_name": "Comfort Inn"
+  },
+  "59250": {
+    "label_idx": 9,
+    "label_name": "Hotel-Restaurant Les Oliviers"
+  },
+  "68770": {
+    "label_idx": 10,
+    "label_name": "Red Roof Inn & Suites Dover"
+  },
+  "74742": {
+    "label_idx": 11,
+    "label_name": "Hampton Inn & Suites Orlando/East UCF Area"
+  },
+  "76859": {
+    "label_idx": 12,
+    "label_name": "Hampton Inn & Suites Boise Meridian"
+  },
+  "81887": {
+    "label_idx": 13,
+    "label_name": "Springhill Suites by Marriott Louisville Airport"
+  },
+  "8537": {
+    "label_idx": 14,
+    "label_name": "Best Western Arrowhead Lodge & Suites"
+  },
+  "86614": {
+    "label_idx": 15,
+    "label_name": "Louisville Marriott East"
+  },
+  "93762": {
+    "label_idx": 16,
+    "label_name": "Hampton Inn Philadelphia/Voorhees"
+  }
+}
