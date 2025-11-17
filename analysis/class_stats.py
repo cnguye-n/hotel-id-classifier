@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 def load_data(
     train_csv: str = "50k_train_set.csv",
     hotel_csv: str = "hotel_info.csv",
