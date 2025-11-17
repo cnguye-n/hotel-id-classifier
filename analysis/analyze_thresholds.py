@@ -88,10 +88,10 @@ def main(args):
 
     rows = analyze_thresholds(counts, thresholds)
 
-    # Optional: save to CSV
-    out_path = Path("threshold_results.csv")
-    pd.DataFrame(rows).to_csv(out_path, index=False)
-    print(f"\nSaved detailed results to {out_path}")
+    # Optional: save to CSV - commented out bc I already downloaded the csv
+    #out_path = Path("threshold_results.csv")
+    #pd.DataFrame(rows).to_csv(out_path, index=False)
+    #print(f"\nSaved detailed results to {out_path}")
 
 
 if __name__ == "__main__":
