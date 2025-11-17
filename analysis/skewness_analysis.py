@@ -5,6 +5,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import skew
 
+#this outputs the skewness of the class distribution (images per hotel) and also creates the
+#images_per_hotel.png bar chart and images_per_hotel_boxplot.png boxplot figures
+#the functions for those are on the bottom of the file right above main
+
 # -------------------------------------------------------------------
 # CONFIG – change these if needed
 # -------------------------------------------------------------------

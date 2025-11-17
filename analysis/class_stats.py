@@ -1,5 +1,8 @@
 import pandas as pd
 
+#this script analyzes the distribution of images per hotel in the training dataset and outputs stats
+#it is the one that made the hotel_image_counts.csv file
+
 def load_data(
     train_csv: str = "50k_train_set.csv",
     hotel_csv: str = "hotel_info.csv",
