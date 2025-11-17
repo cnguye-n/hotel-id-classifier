@@ -168,58 +168,66 @@ def plot_boxplot_image_counts(
     n_outliers_to_show: int = 5,
 ):
     """
-    Cleaner boxplot for images-per-hotel with:
-    - Top N outliers displayed
-    - Q1, Median, Q3, IQR labels near the box
-    - Dynamic title showing N
+    Plot:
+      - Left: boxplot of images per hotel + top N outliers
+      - Right: 'tail' view showing ALL outliers beyond the upper whisker
+
+    Also prints full boxplot stats in the terminal via compute_boxplot_stats().
     """
+    # Compute stats + print them in terminal
     stats = compute_boxplot_stats(counts)
     data = counts.values
 
-    # Identify top-N outliers
+    # All outliers (beyond upper whisker) and the top-N we want to highlight
     all_outliers = counts[counts > stats["upper_whisker"]].sort_values(ascending=False)
     sample_outliers = all_outliers.head(n_outliers_to_show)
 
-    plt.figure(figsize=(9, 4))
-    ax = plt.gca()
+    # Make a 1x2 figure: left = boxplot, right = tail plot
+    fig, (ax_box, ax_tail) = plt.subplots(
+        1,
+        2,
+        figsize=(14, 4),
+        gridspec_kw={"width_ratios": [2.0, 1.2]},
+    )
 
-    # Draw main boxplot WITHOUT automatic outlier points
-    ax.boxplot(
+    # ------------------------------------------------------------------
+    # LEFT: main boxplot with top-N outliers
+    # ------------------------------------------------------------------
+    ax_box.boxplot(
         data,
         vert=False,
-        showfliers=False,
+        showfliers=False,  # we will plot selected outliers manually
         patch_artist=True,
         boxprops=dict(facecolor="#cce5ff", alpha=0.8),
         medianprops=dict(color="darkred", linewidth=2),
     )
 
-    # Dynamic title
-    ax.set_title(
+    ax_box.set_title(
         f"Images per Hotel (Boxplot with Top {n_outliers_to_show} Outliers)",
-        fontsize=12
+        fontsize=12,
     )
-    ax.set_xlabel("Number of Images per Hotel")
-    ax.set_yticks([])
+    ax_box.set_xlabel("Number of Images per Hotel")
+    ax_box.set_yticks([])
 
-    # Plot the top-N outliers manually
+    # Plot top-N outliers as black dots
     for val in sample_outliers:
-        ax.plot(val, 1, 'ko', markersize=4)
+        ax_box.plot(val, 1, "ko", markersize=4)
 
-    # Zoom in: whiskers + small space + outliers
+    # Zoom around whiskers + sample outliers
     max_to_show = max(
         stats["upper_whisker"] + stats["iqr"],
         sample_outliers.max() if not sample_outliers.empty else stats["upper_whisker"],
     )
-    ax.set_xlim(0, max_to_show + 10)
+    ax_box.set_xlim(0, max_to_show + 10)
 
-    # Draw Q1, Median, Q3 lines
+    # Q1, Median, Q3 guideline lines
     for x, label, color in [
         (stats["q1"], "Q1", "orange"),
         (stats["median"], "Median", "red"),
         (stats["q3"], "Q3", "orange"),
     ]:
-        ax.axvline(x, color=color, linestyle="--", linewidth=1)
-        ax.text(
+        ax_box.axvline(x, color=color, linestyle="--", linewidth=1)
+        ax_box.text(
             x,
             0.85,
             label,
@@ -229,43 +237,71 @@ def plot_boxplot_image_counts(
             fontsize=8,
         )
 
-    # ---- Add small info block near the box ----
-    box_label_x = (stats["q3"] + stats["median"]) / 2
-    ax.text(
-        box_label_x,
-        0.4,
-        (
-            f"Q1 = {stats['q1']:.0f}\n"
-            f"Median = {stats['median']:.0f}\n"
-            f"Q3 = {stats['q3']:.0f}\n"
-            f"IQR = {stats['iqr']:.0f}"
-        ),
-        fontsize=8,
-        ha="center",
-        va="top",
-        bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="gray", alpha=0.8),
+    # Single summary box (Q1, Median, Q3, IQR, outlier info)
+    summary_text = (
+        f"Q1 = {stats['q1']:.0f}\n"
+        f"Median = {stats['median']:.0f}\n"
+        f"Q3 = {stats['q3']:.0f}\n"
+        f"IQR = {stats['iqr']:.0f}\n"
+        f"Outliers shown = {len(sample_outliers)} of {stats['n_outliers']}"
     )
 
-    # ---- Smaller summary box for outliers ----
-    ax.text(
+    ax_box.text(
         max_to_show - 1,
         0.9,
-        f"Outliers shown = {len(sample_outliers)} / {stats['n_outliers']}",
+        summary_text,
         fontsize=8,
         va="top",
         ha="right",
-        bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="gray", alpha=0.7),
+        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8),
     )
+
+    # ------------------------------------------------------------------
+    # RIGHT: tail plot – all outliers beyond upper whisker
+    # ------------------------------------------------------------------
+    ax_tail.set_title(f"Tail: All Outliers (> upper whisker)\n(n = {len(all_outliers)})")
+    ax_tail.set_xlabel("Number of Images per Hotel")
+    ax_tail.set_yticks([])
+
+    if len(all_outliers) > 0:
+        # Plot all outliers as a horizontal "rug" of points at y=1
+        ax_tail.scatter(all_outliers.values, [1] * len(all_outliers), s=6, alpha=0.4)
+
+        # Show where the upper whisker is (boundary between "regular" and "outlier")
+        ax_tail.axvline(stats["upper_whisker"], color="gray", linestyle="--", linewidth=1)
+        ax_tail.text(
+            stats["upper_whisker"],
+            1.05,
+            "Upper whisker",
+            ha="center",
+            va="bottom",
+            fontsize=7,
+            rotation=90,
+            color="gray",
+        )
+
+        # Nicely padded x-limits around the outliers
+        min_tail = all_outliers.min()
+        max_tail = all_outliers.max()
+        ax_tail.set_xlim(min_tail - 10, max_tail + 10)
+        ax_tail.set_ylim(0.8, 1.2)
+    else:
+        ax_tail.text(
+            0.5,
+            0.5,
+            "No outliers beyond upper whisker",
+            ha="center",
+            va="center",
+            transform=ax_tail.transAxes,
+        )
 
     plt.tight_layout()
 
-    if output_path:
-        plt.savefig(output_path, dpi=300)
-        print(f"Saved boxplot figure to {output_path}")
+    if output_path is not None:
+        fig.savefig(output_path, dpi=300)
+        print(f"Saved boxplot + tail figure to {output_path}")
 
     plt.show()
-
-
 
 def main():
     """Output the full skewness + class distribution analysis."""
@@ -273,7 +309,7 @@ def main():
     counts = compute_image_counts(df, LABEL_COL)
     _ = compute_skewness(counts)
     #plot_image_count_distribution(counts, output_path=BARCHAT_PATH) #uncomment if you haven't created bar chart image already
-    plot_boxplot_image_counts(counts, output_path=BOXPLOT_PATH) #uncomment if you haven't created boxplot image already
+    #plot_boxplot_image_counts(counts, output_path=BOXPLOT_PATH, n_outliers_to_show=10) #uncomment if you haven't created boxplot image already
 
 
 # Only run main() when this file is executed directly (not imported)
