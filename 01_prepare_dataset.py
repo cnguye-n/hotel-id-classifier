@@ -55,10 +55,16 @@ def main(args):
     print("\nClass distribution BEFORE filtering:")
     print(counts.describe())
 
-    print("\nClasses with >= 5 images:", (counts >= 5).sum())
-    print("Classes with >= 3 images:", (counts >= 3).sum())
-    print("Classes with >= 2 images:", (counts >= 2).sum())
-    print("Classes with >= 1 image:", (counts >= 1).sum())
+    # Threshold table: how many classes/images would we keep?
+    thresholds = [1, 2, 3, 5]
+    print("\nMin-images-per-class summary (BEFORE filtering):")
+    print("Threshold\tClasses Kept\tImages Kept")
+    print("----------------------------------------------")
+    for t in thresholds:
+        mask = counts >= t
+        num_classes = mask.sum()
+        num_images = counts[mask].sum()
+        print(f">= {t}\t\t{num_classes}\t\t{num_images}")
     print("-----------------------------------------------------\n")
     # ---------------------------------------------------------------
 
