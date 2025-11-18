@@ -1,5 +1,5 @@
 Git Repository Created from Hao's Amazing Code!!!
-Code Based on Hao's Work
+Code Based on the Foundation of Hao's Work
 
 THIS IS NOT READY TO BE CLONED YET!!
 I need to fix the gitattributes, git ignore and all that 
