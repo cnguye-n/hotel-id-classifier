@@ -1,3 +1,6 @@
+Git Repository Created from Hao's Amazing Code!!!
+Code Based on Hao's Work
+
 THIS IS NOT READY TO BE CLONED YET!!
 I need to fix the gitattributes, git ignore and all that 
 
@@ -11,4 +14,3 @@ You can also edit the script to customize the size of the csv. For example have 
 
 
 
-Git Repository Created from Hao's Amazing Code!!!
